@@ -6,13 +6,13 @@ use hex;
 type HmacSha1 = Hmac<Sha1>;
 const BASE_URL: &str = "http://timetableapi.ptv.vic.gov.au";
 
-pub struct ApiConfig {
+pub struct PtvApiClient {
     pub dev_id: i32,
     pub key: String,
 }
 
-impl ApiConfig {
-    pub fn build() -> Result<ApiConfig, &'static str> {
+impl PtvApiClient {
+    pub fn build() -> Result<PtvApiClient, &'static str> {
 
         let dev_id = env::var("PTV_DEV_ID").map_err(|_| "Expected environment variable PTV_DEV_ID set")?;
 
@@ -20,7 +20,7 @@ impl ApiConfig {
 
         let key = env::var("PTV_API_KEY").map_err(|_| "Expected environment variable PTV_API_KEY set")?;
 
-        Ok(ApiConfig {
+        Ok(PtvApiClient {
             dev_id,
             key
         })
@@ -60,7 +60,7 @@ mod tests {
         env::set_var("PTV_DEV_ID", ptv_dev_id.to_string());
         env::set_var("PTV_API_KEY", ptv_api_key);
 
-        let config = ApiConfig::build();
+        let config = PtvApiClient::build();
 
         let config = config.unwrap();
 
@@ -77,7 +77,7 @@ mod tests {
 
         env::set_var("PTV_API_KEY", ptv_api_key);
 
-        let config = ApiConfig::build();
+        let config = PtvApiClient::build();
 
         assert!(config.is_err());
 
@@ -95,7 +95,7 @@ mod tests {
 
         env::set_var("PTV_DEV_ID", ptv_dev_id.to_string());
 
-        let config = ApiConfig::build();
+        let config = PtvApiClient::build();
 
         assert!(config.is_err());
 
@@ -115,7 +115,7 @@ mod tests {
         env::set_var("PTV_DEV_ID", ptv_dev_id);
         env::set_var("PTV_API_KEY", ptv_api_key);
 
-        let config = ApiConfig::build();
+        let config = PtvApiClient::build();
 
         assert!(config.is_err());
 
@@ -135,7 +135,7 @@ mod tests {
         env::set_var("PTV_DEV_ID", ptv_dev_id.to_string());
         env::set_var("PTV_API_KEY", ptv_api_key);
 
-        let config = ApiConfig::build();
+        let config = PtvApiClient::build();
 
         let config = config.unwrap();
 

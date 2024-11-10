@@ -1,18 +1,35 @@
-mod config;
+mod ptv_api;
+mod models;
 
 use std::error::Error;
-use config::api_config::ApiConfig;
+use ptv_api::ptv_api_client::PtvApiClient;
+use crate::models::departure::{Departure, Departures};
 
 fn main() -> Result<(), Box<dyn Error>>  {
-    let config = ApiConfig::build()?;
+    let client = PtvApiClient::build()?;
 
-    println!("Config built!");
-    println!("Generating URL for /v3/departures/route_type/1/stop/2043/route/1881");
+    let request = "/v3/departures/route_type/1/stop/2043/route/1881?direction_id=28&date_utc=2024-11-10T01:58:17+0000";
 
-    let url = config.generate_url("/v3/departures/route_type/1/stop/2043/route/1881")?;
+    println!("Client built!");
+    println!("Generating URL for {request}");
+
+    let url = client.generate_url(request)?;
 
     println!("Generated URL was:");
     println!("{}", url);
+
+    let client = reqwest::blocking::Client::new();
+
+    let response = client.get(url)
+        .send()?;
+
+    if response.status().is_success() {
+        let departures: Departures = response.json()?;
+
+        for departure in departures.departures {
+            println!("{:?}", departure)
+        }
+    }
 
     Ok(())
 }
